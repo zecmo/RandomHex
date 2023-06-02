@@ -1,4 +1,4 @@
-## Interface: 100010
+## Interface: 100105
 ## Title: Random Hex
 ## Author: zecmo, cloned from RandomLure then modified into RandomHex
 ## Version: 1.0.0
