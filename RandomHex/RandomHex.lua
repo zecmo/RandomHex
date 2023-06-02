@@ -24,8 +24,8 @@ local rhexVariants = {
 	{309328, "Living Honey"},
 	{269352, "Skeletal Hatchling"},
 	{211004, "Spider"},
-	{277784, "Wicker Mongrel [Alliance]"},
-	{277778, "Zandalari Tendonripper [Horde]"},
+	{277784, "Wicker Mongrel"},
+	{277778, "Zandalari Tendonripper"},
 	}
 
 --------------------------------------------------------------------
@@ -341,16 +341,24 @@ end
 function ColorizeHexVariantText()
 	-- Check for usable hex variants then colorize and [debug] print out all available hex variants --		
 	for k in pairs(rhexVariants) do
+
+		-- Add a faction suffix for convenince --
+		local factionSuffix = ""
+		if rhexVariants[k][2] == "Wicker Mongrel" then
+			factionSuffix = " [Alliance]" end
+		if rhexVariants[k][2] == "Zandalari Tendonripper" then
+			factionSuffix = " [Horde]" end
+
 		if IsSpellKnownOrOverridesKnown(rhexVariants[k][1]) then
 			if debugHex then
 				print("=== " .. rhexVariants[k][2] .. " : Usable!") end
 				-- Default white --
-				rhexCheckButtons[k].Text:SetText("  " .. rhexVariants[k][2])
+				rhexCheckButtons[k].Text:SetText("  " .. rhexVariants[k][2] .. factionSuffix)
 		else
 			if debugHex then
 				print("=== " .. rhexVariants[k][2] .. " : NOT Usable!!") end
 				-- Unknowns red --
-				rhexCheckButtons[k].Text:SetText("  " .. unusableHexTextColor .. rhexVariants[k][2])
+				rhexCheckButtons[k].Text:SetText("  " .. unusableHexTextColor .. rhexVariants[k][2] .. factionSuffix)
 		end
 	end
 end
@@ -371,32 +379,41 @@ function SelectRandomHexVariant()
 	if #rhexList == 0 then
 		-- Default Hex --
 		rhexBtn:SetAttribute("spell", 51514)
-		UpdateRandomHexMacro("Hex","237579")
+		UpdateRandomHexMacro("Hex(Frog)","237579")
 		return
 	end
 
 	-- Get random index --
 	local rnd = GetRandomHexVariantIndex(#rhexList)
-	local randomHexIndex = rhexList[rnd]
+	local randomHexIndexSpellId = rhexList[rnd]
 
 	-- Get Spell Info with many return values --
-	name, rank, icon, castTime, minRange, maxRange, spellID, originalIcon = GetSpellInfo(randomHexIndex) -- Example: "Flash Heal", nil, 135907, 1352, 0, 40, 2061
+	name, rank, icon, castTime, minRange, maxRange, spellID, originalIcon = GetSpellInfo(randomHexIndexSpellId) -- Example: "Flash Heal", nil, 135907, 1352, 0, 40, 2061
 
-	-- Update button and macro --
+	-- Update button --
 	rhexBtn:SetAttribute("spell", spellID)
-	UpdateRandomHexMacro(name, icon)
 
-	-- Once the hex variant data is loaded, remove the variant id from the pool
-	table.remove(rhexList, rnd)
-	
+	-- Build name and update macro --
+	local hexVariantName = HexNameFromSpellId(randomHexIndexSpellId)
+	local hexCompoundName = name .. "(" .. hexVariantName .. ")"
+	UpdateRandomHexMacro(hexCompoundName, icon)
+
 	if debugHex then
-		for i=1, #rhexVariants do
-			if (rhexVariants[i][1] == randomHexIndex) then
-				print("=== Selected: " .. rhexVariants[i][2]) end
-		end
-	end
+		print("=== Selected: " .. hexVariantName) end
+
+	-- Once the hex variant data is loaded, remove the variant id from the pool --
+	table.remove(rhexList, rnd)	
 end
 
+function HexNameFromSpellId(spellId)
+	for i=1, #rhexVariants do
+		if rhexVariants[i][1] == spellId then
+			return rhexVariants[i][2]
+		end
+	end
+
+	return ""
+end
 
 --------------------------------------------------------------------
 -- Gets random index without allowing the same hex variant twice in a row
