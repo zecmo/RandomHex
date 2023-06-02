@@ -1,0 +1,11 @@
+## Interface: 100010
+## Title: Random Hex
+## Author: zecmo, cloned from RandomLure then modified into RandomHex
+## Version: 1.0.0
+## Notes: Uses a random hex variant for Shamans
+## SavedVariables: rhexOptions
+
+## X-Localizations: enUS, enGB
+## X-CompatibleLocales: enUS, enGB
+
+RandomHex.lua
