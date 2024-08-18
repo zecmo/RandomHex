@@ -48,9 +48,11 @@ end
 
 local rhexOptionsPanel = CreateFrame("Frame")
 rhexOptionsPanel.name = "Random Hex [/hex]"
-rhexOptionsPanel.okay = function() rhexOptionsOkay(); end
-rhexOptionsPanel.cancel = function() rhexOptionsCancel(); end
-InterfaceOptions_AddCategory(rhexOptionsPanel)
+rhexOptionsPanel.OnCommit = function() rhexOptionsOkay(); end
+rhexOptionsPanel.OnDefault = function() end
+rhexOptionsPanel.OnRefresh = function() end
+local rhexCategory = Settings.RegisterCanvasLayoutCategory(rhexOptionsPanel, "Random Hex [/hex]")
+Settings.RegisterAddOnCategory(rhexCategory)
 
 -- Title --
 local rhexTitle = CreateFrame("Frame",nil, rhexOptionsPanel)
@@ -195,6 +197,12 @@ end)
 --------------------------------------------------------------------
 
 function rhexOptionsOkay()
+	-- Class Check!
+	local classFilename, classId = UnitClassBase("player")
+	if classFilename ~= "SHAMAN" then
+		return
+	end
+
 	for i = 1, #rhexOptions do
 		for _,v in pairs(rhexOptions) do
 			if rhexCheckButtons[i].ID == v[1] then
@@ -208,16 +216,6 @@ function rhexOptionsOkay()
 
 	if #rhexList == 0 then
 		print("|cffFF0000RandomHex Addon: No valid Hex Variants selected -|r Ribbit!") end	
-end
-
-function rhexOptionsCancel()
-	for i,v in pairs(rhexOptions) do
-		for l = 1, #rhexOptions do
-			if rhexCheckButtons[l].ID == v[1] and v[2] == true then
-				rhexCheckButtons[l]:SetChecked(true)
-			end
-		end
-	end
 end
 
 --------------------------------------------------------------------
@@ -388,15 +386,15 @@ function SelectRandomHexVariant()
 	local randomHexIndexSpellId = rhexList[rnd]
 
 	-- Get Spell Info with many return values --
-	name, rank, icon, castTime, minRange, maxRange, spellID, originalIcon = GetSpellInfo(randomHexIndexSpellId) -- Example: "Flash Heal", nil, 135907, 1352, 0, 40, 2061
+	local spellInfo = C_Spell.GetSpellInfo(randomHexIndexSpellId)
 
 	-- Update button --
-	rhexBtn:SetAttribute("spell", spellID)
+	rhexBtn:SetAttribute("spell", spellInfo["spellID"])
 
 	-- Build name and update macro --
 	local hexVariantName = HexNameFromSpellId(randomHexIndexSpellId)
-	local hexCompoundName = name .. "(" .. hexVariantName .. ")"
-	UpdateRandomHexMacro(hexCompoundName, icon)
+	local hexCompoundName = spellInfo["name"] .. "(" .. hexVariantName .. ")"
+	UpdateRandomHexMacro(hexCompoundName, spellInfo["originalIconID"])
 
 	if debugHex then
 		print("=== Selected: " .. hexVariantName) end
@@ -462,6 +460,5 @@ end
 --------------------------------------------------------------------
 SLASH_RandomHex1 = "/hex"
 function SlashCmdList.RandomHex(msg, editbox)
-InterfaceOptionsFrame_OpenToCategory(rhexOptionsPanel)
-InterfaceOptionsFrame_OpenToCategory(rhexOptionsPanel)
+	Settings.OpenToCategory(rhexCategory:GetID())
 end
