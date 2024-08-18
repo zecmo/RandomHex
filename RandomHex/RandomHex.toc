@@ -1,7 +1,7 @@
-## Interface: 100105
+## Interface: 110002
 ## Title: Random Hex
 ## Author: zecmo, cloned from RandomLure then modified into RandomHex
-## Version: 1.0.0
+## Version: 1.0.1
 ## Notes: Uses a random hex variant for Shamans
 ## SavedVariables: rhexOptions
 
