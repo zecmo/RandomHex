@@ -1,8 +1,11 @@
-## Interface: 110002
+## Interface: 110200
 ## Title: Random Hex
+## IconTexture: Interface/Addons/RandomHex/art/RandomHex_small_icon
 ## Author: zecmo, cloned from RandomLure then modified into RandomHex
-## Version: 1.0.1
-## Notes: Uses a random hex variant for Shamans
+## Version: 1.0.2
+## Notes: Uses a random hex variant for Shamans.
+## Notes: |cff58C6FAUses a random hex variant for Shamans.|r|n|cffbbbbbbBy zecmo|r|n|n|cffFFC700Slash command: /hex|r
+## Category: Combat
 ## SavedVariables: rhexOptions
 
 ## X-Localizations: enUS, enGB
